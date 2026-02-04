@@ -314,7 +314,61 @@ Quick recap of what you learned:
 **Tomorrow's Challenge:**
 I'm going to ask you to delegate ONE task you'd normally do yourself. Small stakes, real practice.
 
+**By the way** — if you have questions about any of this, just ask me. I'm here to help you apply these concepts to your actual work.
+
 See you then!`,
+  },
+  // Learner asks a clarifying question
+  learnerQuestion: {
+    content: `Great question! The 70% rule is about fighting perfectionism.
+
+Here's the idea: If someone can do a task 70% as well as you, **delegate it**. Why?
+
+1. **They'll get better.** They might start at 70%, but with practice they'll hit 90%+.
+2. **Your 100% isn't sustainable.** If you do everything yourself, you become the bottleneck.
+3. **Good enough ships.** Most tasks don't need perfection — they need completion.
+
+**The mental shift:**
+Instead of asking "Can they do it as well as me?" ask "Can they do it well enough to move us forward?"
+
+**Real example:**
+You could write the team update email perfectly. But if your direct report can write it 70% as well, they should do it. They learn, you free up time, the email still gets sent.
+
+Does that help? Want me to walk through how to apply this to a specific task you're thinking about delegating?`,
+  },
+  // CARA offers to schedule coaching
+  coachingSchedule: {
+    content: `Glad that clicked! 💡
+
+Speaking of applying this — you have an **AI Coaching session** coming up as part of this program. It's a 15-minute practice session where you'll simulate delegating a task to a direct report.
+
+I'll play the direct report. You'll practice:
+• Explaining the task clearly
+• Setting expectations (the "what good looks like")
+• Checking for understanding without micromanaging
+
+**Want me to schedule it?**
+
+I can see you have some open slots:
+• Tomorrow, 2:00 PM (after your team standup)
+• Thursday, 10:00 AM
+• Friday, 11:30 AM
+
+Which works best? Or I can find another time.`,
+  },
+  // Coaching session scheduled
+  coachingScheduled: {
+    content: `Done! ✅ Booked for tomorrow at 2 PM.
+
+**What to expect:**
+• I'll send you a reminder 15 minutes before
+• The session takes about 15 minutes
+• I'll play your direct report — you practice delegating
+• No prep needed, just show up ready to practice
+
+**Pro tip:** Think of a real task you've been meaning to delegate. We'll use that as the scenario — makes the practice immediately useful.
+
+See you tomorrow! 🗓️`,
   },
 };
 
@@ -369,56 +423,67 @@ Want me to build this?`,
   afterCreate: {
     content: `Done! ✅ Built in 30 seconds. (You're welcome. 😄)
 
-Here's your learning path — I've attached a preview PDF so you can see exactly what learners will experience.
+**Your Learning Program is Ready:**
+
+📚 **Learning Path:** getabstract.com/paths/manager-essentials
+📅 **Activity Calendar:** getabstract.com/calendar/q1-managers
+🤖 **AI Coaching Session:** getabstract.com/coaching/feedback-practice
 
 **Quick Stats:**
 • 3 modules, 26 minutes of core content
 • 3 practice activities
-• 1 AI Coaching session
+• 1 AI Coaching session (delivered via CARA)
 • Estimated completion time: 45 min over 2 weeks
 
-**What's Included:**
-✓ Automatic welcome message
-✓ Spaced delivery schedule
-✓ Reminder nudges for inactive learners
-✓ Completion tracking + insights
+**How Delivery Works:**
+• Content & reminders arrive via CARA (the learner's coaching agent)
+• Learners can ask CARA questions about the material
+• CARA will help them schedule their AI Coaching session
+• You get progress reports here in LENA
 
-Now — who should I send this to? You can give me:
-• A team name ("Q1 Manager Cohort")
-• Specific names
-• Or an email list`,
+I've attached a preview PDF so you can see exactly what learners will experience.
+
+Now — who should I send this to?`,
     attachment: { type: "pdf", title: "First-Time_Manager_Essentials_Preview.pdf", size: "2.4 MB" },
   },
   scheduled: {
     content: `Perfect. Here's the delivery plan for your 12 learners:
 
-**📅 The Journey:**
+**📅 The Journey (via CARA):**
 
-**Day 1** — Welcome + Module 1 (Delegation)
+**Day 1** — Welcome + Module 1
+📚 getabstract.com/learn/delegation
 *"Hey! Your manager essentials program starts today..."*
 
 **Day 2** — Micro-activity
+📝 getabstract.com/activity/delegate-one-task
 *"Today's challenge: Delegate one task you'd normally do yourself."*
 
-**Day 4** — Module 2 (Feedback) + check-in
+**Day 4** — Module 2 + check-in
+📚 getabstract.com/learn/feedback
 *For anyone who hasn't started yet, gentle nudge*
 
-**Day 5** — AI Coaching invitation
-*"Ready to practice a tough feedback conversation? I'll play your direct report."*
+**Day 5** — AI Coaching session
+🤖 getabstract.com/coaching/feedback-practice
+*CARA will help each learner schedule this in their calendar*
 
-**Day 8** — Module 3 (1:1s)
+**Day 8** — Module 3
+📚 getabstract.com/learn/one-on-ones
 *Final content drop*
 
 **Day 10** — Wrap-up + celebration
-*Completion certificate, satisfaction survey*
+🎓 Completion certificate, satisfaction survey
 
-**What I'll Handle Automatically:**
-• Welcome messages
-• Reminder nudges (friendly, not annoying)
+**What Learners Can Do with CARA:**
+• Ask questions about the material ("What's the 70% rule again?")
+• Get help applying concepts to their real work
+• Schedule their AI Coaching session directly in their calendar
+
+**What I'll Handle:**
+• All delivery sequencing
+• Reminder nudges
 • Progress tracking
 • Flagging anyone who falls behind
-
-You'll get a progress report from me at the halfway point and when everyone completes.
 
 Ready to launch? 🚀`,
   },
