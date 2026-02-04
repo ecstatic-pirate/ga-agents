@@ -58,6 +58,33 @@ function formatTime(date: Date): string {
   });
 }
 
+// Simple markdown renderer for bold text and line breaks
+function renderMarkdown(text: string): React.ReactNode[] {
+  const parts: React.ReactNode[] = [];
+  // Split by **text** pattern for bold
+  const regex = /\*\*([^*]+)\*\*/g;
+  let lastIndex = 0;
+  let match;
+  let key = 0;
+
+  while ((match = regex.exec(text)) !== null) {
+    // Add text before the match
+    if (match.index > lastIndex) {
+      parts.push(<span key={key++}>{text.slice(lastIndex, match.index)}</span>);
+    }
+    // Add bold text
+    parts.push(<strong key={key++} className="font-semibold">{match[1]}</strong>);
+    lastIndex = match.index + match[0].length;
+  }
+
+  // Add remaining text
+  if (lastIndex < text.length) {
+    parts.push(<span key={key++}>{text.slice(lastIndex)}</span>);
+  }
+
+  return parts.length > 0 ? parts : [<span key={0}>{text}</span>];
+}
+
 function formatDate(date: Date, demoStartDate?: Date): string {
   if (!demoStartDate) {
     // For non-agent chats, use regular date formatting
@@ -259,7 +286,7 @@ export default function ChatArea() {
                     />
                     <div className="bg-[#292929] rounded-md px-3 py-2 max-w-[85%]">
                       <p className="text-sm text-white whitespace-pre-wrap leading-5">
-                        {message.content}
+                        {renderMarkdown(message.content)}
                       </p>
                       {/* Audio attachment */}
                       {message.attachment?.type === "audio" && (
