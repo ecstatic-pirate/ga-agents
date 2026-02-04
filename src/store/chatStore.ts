@@ -535,7 +535,13 @@ export const useChatStore = create<ChatState>((set, get) => ({
   demoTime: new Date(), // Current fictional time
 
   setActiveContact: (id: string) => {
-    set({ activeContactId: id });
+    set((state) => ({
+      activeContactId: id,
+      // Clear unread when opening chat
+      contacts: state.contacts.map((c) =>
+        c.id === id ? { ...c, unread: false } : c
+      ),
+    }));
   },
 
   getDemoStartTime: () => {
@@ -623,6 +629,9 @@ export const useChatStore = create<ChatState>((set, get) => ({
         currentStep: 0,
       };
 
+      // Don't update lastMessage for typing indicators (empty content)
+      const shouldUpdateLastMessage = !message.isTyping && message.content;
+
       return {
         conversations: {
           ...state.conversations,
@@ -635,14 +644,16 @@ export const useChatStore = create<ChatState>((set, get) => ({
           c.id === contactId
             ? {
                 ...c,
-                lastMessage:
-                  message.sender === "user"
-                    ? `You: ${message.content.substring(0, 30)}...`
-                    : message.content.substring(0, 30) + "...",
-                lastMessageTime: new Date().toLocaleTimeString("en-US", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  hour12: false,
+                ...(shouldUpdateLastMessage && {
+                  lastMessage:
+                    message.sender === "user"
+                      ? `You: ${message.content.substring(0, 35)}`
+                      : message.content.substring(0, 35),
+                  lastMessageTime: new Date().toLocaleTimeString("en-US", {
+                    hour: "numeric",
+                    minute: "2-digit",
+                    hour12: true,
+                  }),
                 }),
               }
             : c

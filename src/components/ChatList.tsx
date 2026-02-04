@@ -95,7 +95,11 @@ export default function ChatList() {
             <span>Favorites</span>
           </div>
           {agents.map((contact) => (
-            <div key={contact.id} className="px-2">
+            <div key={contact.id} className="px-2 relative">
+              {/* Unread indicator dot */}
+              {contact.unread && (
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-[#5b5fc7] rounded-full" />
+              )}
               <div
                 className={`chat-item ${activeContactId === contact.id ? "active" : ""}`}
                 onClick={() => setActiveContact(contact.id)}
@@ -108,14 +112,14 @@ export default function ChatList() {
                 />
                 <div className="ml-3 flex-1 min-w-0">
                   <div className="flex items-center justify-between">
-                    <span className="font-medium text-white text-sm truncate">
+                    <span className={`font-medium text-sm truncate ${contact.unread ? "text-white font-semibold" : "text-white"}`}>
                       {contact.name}
                     </span>
                     <span className="text-xs text-[#a19f9d] ml-2 flex-shrink-0">
                       {contact.lastMessageTime}
                     </span>
                   </div>
-                  <div className="text-xs text-[#a19f9d] truncate mt-0.5">
+                  <div className={`text-xs truncate mt-0.5 ${contact.unread ? "text-white font-medium" : "text-[#a19f9d]"}`}>
                     {contact.lastMessage}
                   </div>
                 </div>
@@ -131,7 +135,11 @@ export default function ChatList() {
             <span>Chats</span>
           </div>
           {regularContacts.map((contact) => (
-            <div key={contact.id} className="px-2">
+            <div key={contact.id} className="px-2 relative">
+              {/* Unread indicator dot */}
+              {contact.unread && (
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-[#5b5fc7] rounded-full" />
+              )}
               <div
                 className={`chat-item ${activeContactId === contact.id ? "active" : ""}`}
                 onClick={() => setActiveContact(contact.id)}
@@ -139,14 +147,14 @@ export default function ChatList() {
                 <Avatar initials={contact.initials} status={contact.status} />
                 <div className="ml-3 flex-1 min-w-0">
                   <div className="flex items-center justify-between">
-                    <span className="font-medium text-white text-sm truncate">
+                    <span className={`font-medium text-sm truncate ${contact.unread ? "text-white font-semibold" : "text-white"}`}>
                       {contact.name}
                     </span>
                     <span className="text-xs text-[#a19f9d] ml-2 flex-shrink-0">
                       {contact.lastMessageTime}
                     </span>
                   </div>
-                  <div className="text-xs text-[#a19f9d] truncate mt-0.5">
+                  <div className={`text-xs truncate mt-0.5 ${contact.unread ? "text-white font-medium" : "text-[#a19f9d]"}`}>
                     {contact.lastMessage}
                   </div>
                 </div>
