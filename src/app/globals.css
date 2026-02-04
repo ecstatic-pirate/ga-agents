@@ -1,26 +1,219 @@
 @import "tailwindcss";
 
+/* Teams Dark Theme Colors - From Fluent UI source */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Backgrounds - from fluent-ui-react colors.ts */
+  --teams-bg-app: #201f1f;           /* App black darktheme */
+  --teams-bg-surface: #292828;       /* Surface/card background */
+  --teams-bg-surface-hover: #3b3a39; /* Hover state */
+  --teams-bg-surface-active: #484644; /* Active/selected state */
+  --teams-bg-input: #201f1f;         /* Input background */
+  --teams-bg-message: #292828;       /* Message bubble incoming */
+  --teams-bg-message-mine: #6264a7;  /* Message bubble outgoing (brand) */
+  --teams-bg-rail: #201f1f;          /* Left rail */
+  --teams-bg-header: #292828;        /* Header bar */
+
+  /* Text colors */
+  --teams-text-primary: #ffffff;
+  --teams-text-secondary: #c8c6c4;   /* Gray 130 */
+  --teams-text-tertiary: #a19f9d;    /* Gray 120 */
+  --teams-text-disabled: #605e5c;    /* Gray 90 */
+
+  /* Brand colors */
+  --teams-brand: #6264a7;            /* Primary brand */
+  --teams-brand-hover: #8b8cc7;      /* Brand hover */
+  --teams-brand-active: #585a96;     /* Brand pressed */
+  --teams-brand-dark: #464775;       /* Brand dark */
+
+  /* Status colors */
+  --teams-online: #92c353;           /* Available green */
+  --teams-away: #ffaa44;             /* Away yellow */
+  --teams-busy: #c4314b;             /* Busy red */
+  --teams-offline: #8a8886;          /* Offline gray */
+
+  /* Border colors */
+  --teams-border: #484644;           /* Default border */
+  --teams-border-subtle: #3b3a39;    /* Subtle border */
+  --teams-border-strong: #605e5c;    /* Emphasis border */
+
+  /* Accent colors */
+  --teams-mention: #5b5fc7;          /* @mentions */
+  --teams-link: #6264a7;             /* Links */
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-teams-bg-app: var(--teams-bg-app);
+  --color-teams-bg-surface: var(--teams-bg-surface);
+  --color-teams-bg-surface-hover: var(--teams-bg-surface-hover);
+  --color-teams-bg-surface-active: var(--teams-bg-surface-active);
+  --color-teams-text-primary: var(--teams-text-primary);
+  --color-teams-text-secondary: var(--teams-text-secondary);
+  --color-teams-brand: var(--teams-brand);
+  --color-teams-border: var(--teams-border);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: var(--teams-bg-app);
+  color: var(--teams-text-primary);
+  font-family: "Segoe UI", "Segoe UI Web (West European)", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", sans-serif;
+  font-size: 14px;
+  line-height: 20px;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Custom scrollbar for Teams look */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--teams-border-subtle);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--teams-border);
+}
+
+/* Avatar with status indicator */
+.avatar-container {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+}
+
+.status-indicator {
+  position: absolute;
+  bottom: -1px;
+  right: -1px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid var(--teams-bg-surface);
+}
+
+.status-online { background: var(--teams-online); }
+.status-away { background: var(--teams-away); }
+.status-busy { background: var(--teams-busy); }
+.status-offline { background: var(--teams-offline); }
+
+/* Message animations */
+@keyframes messageSlideIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.message-animate {
+  animation: messageSlideIn 0.15s ease-out;
+}
+
+/* Typing indicator */
+@keyframes typingDot {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+  30% { transform: translateY(-3px); opacity: 1; }
+}
+
+.typing-dot {
+  animation: typingDot 1.4s infinite ease-in-out;
+}
+.typing-dot:nth-child(1) { animation-delay: 0s; }
+.typing-dot:nth-child(2) { animation-delay: 0.15s; }
+.typing-dot:nth-child(3) { animation-delay: 0.3s; }
+
+/* Action buttons in messages - Teams Adaptive Card style */
+.action-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px 12px;
+  margin: 4px 8px 4px 0;
+  background: transparent;
+  border: 1px solid var(--teams-border);
+  border-radius: 3px;
+  color: var(--teams-text-primary);
+  font-size: 14px;
+  font-weight: 400;
+  cursor: pointer;
+  transition: all 0.1s ease;
+}
+
+.action-button:hover {
+  background: var(--teams-bg-surface-hover);
+  border-color: var(--teams-brand);
+}
+
+.action-button:active {
+  background: var(--teams-bg-surface-active);
+}
+
+/* Chat list item */
+.chat-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background 0.1s ease;
+  border-radius: 4px;
+  margin: 1px 8px;
+}
+
+.chat-item:hover {
+  background: var(--teams-bg-surface-hover);
+}
+
+.chat-item.active {
+  background: var(--teams-bg-surface-active);
+}
+
+/* Filter chips */
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  font-size: 12px;
+  color: var(--teams-text-secondary);
+  background: transparent;
+  border: 1px solid var(--teams-border);
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.1s ease;
+  white-space: nowrap;
+}
+
+.filter-chip:hover {
+  background: var(--teams-bg-surface-hover);
+  color: var(--teams-text-primary);
+}
+
+.filter-chip.active {
+  background: var(--teams-brand);
+  border-color: var(--teams-brand);
+  color: white;
+}
+
+/* Section header */
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 16px 4px;
+  font-size: 12px;
+  color: var(--teams-text-secondary);
+  cursor: pointer;
+}
+
+.section-header:hover {
+  color: var(--teams-text-primary);
 }
