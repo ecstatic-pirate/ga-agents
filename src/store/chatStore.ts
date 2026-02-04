@@ -50,6 +50,10 @@ type ScriptStep = {
   triggerResponse?: string;
   advanceDays?: number; // How many days to advance the demo time
   advanceHours?: number; // How many hours to advance
+  crossAgentDelivery?: {
+    targetAgent: "cara" | "lena";
+    responseKey: string;
+  };
 };
 
 const caraScript: ScriptStep[] = [
@@ -82,10 +86,14 @@ const lenaScript: ScriptStep[] = [
   { type: "user-response", label: "Create it", userMessage: "Create it", triggerResponse: "afterCreate" },
   // User says who to send to
   { type: "user-response", label: "Send to Q1 cohort", userMessage: "Send it to the Q1 manager cohort", triggerResponse: "scheduled" },
-  // Time skip - Learner perspective (Day 1)
-  { type: "time-skip", label: "⏭ Day 1 — Jamie receives training", triggerResponse: "deliveryJamie", advanceDays: 1 },
-  // Jamie opens module (learner interaction)
-  { type: "user-response", label: "Open Module 1", userMessage: "Opening Module 1...", triggerResponse: "moduleOpened" },
+  // Time skip - Day 1: LENA confirms sent, CARA delivers the content
+  {
+    type: "time-skip",
+    label: "⏭ Day 1 — Training delivered",
+    triggerResponse: "deliverySent",
+    advanceDays: 1,
+    crossAgentDelivery: { targetAgent: "cara", responseKey: "trainingDelivery" }
+  },
   // Time skip - Back to Sarah view (2 weeks later)
   { type: "time-skip", label: "⏭ 2 weeks later — Progress report", triggerResponse: "report", advanceDays: 13 },
   // Sarah extends deadline for lagging learners
@@ -155,6 +163,14 @@ const caraConversation: Record<
     content: `Here's your Growth Snapshot. Keep going — you're building real skills. See you next quarter!`,
     attachment: { type: "pdf", title: "Alex_Growth_Snapshot_Q1.pdf", size: "142 KB" },
   },
+  // Training delivery from LENA via CARA
+  trainingDelivery: {
+    content: `Hi Sarah! 👋\n\nYour "First-Time Manager Essentials" program starts today.\n\nModule 1 is a 10-min read on Delegation. Ready when you are!`,
+    attachment: { type: "pdf", title: "Module_1_Delegation.pdf", size: "856 KB" },
+  },
+  trainingModuleOpened: {
+    content: `Great! Let me know if you have questions. Tomorrow you'll get a quick activity to practice what you learned.`,
+  },
 };
 
 // LENA conversation flow - no action buttons, controlled by script
@@ -175,9 +191,8 @@ const lenaConversation: Record<
   scheduled: {
     content: `Scheduled for 12 learners. Each one gets:\n\n📅 Day 1 → Welcome + Module 1\n📅 Day 2 → Activity: "Delegate one task today"\n📅 Day 4 → Module 2 + reminder\n📅 Day 5 → AI Coaching invite\n📅 Day 8-10 → Module 3 + wrap-up\n\nI'll handle all reminders automatically.`,
   },
-  deliveryJamie: {
-    content: `Hi Jamie! 👋\n\nYour "First-Time Manager Essentials" program starts today.\n\nModule 1 is a 10-min read on Delegation. Ready when you are!`,
-    attachment: { type: "pdf" as const, title: "Module_1_Delegation.pdf", size: "856 KB" },
+  deliverySent: {
+    content: `Content sent to all 12 learners! ✅\n\nYou're also enrolled, so you'll receive your copy via CARA.\n\nI'll send you progress updates as they complete modules.`,
   },
   moduleOpened: {
     content: `Great! Let me know if you have questions. Tomorrow you'll get a quick activity to practice what you learned.`,
@@ -574,6 +589,21 @@ export const useChatStore = create<ChatState>((set, get) => ({
     // Trigger agent response
     if (step.triggerResponse) {
       get().triggerAgentResponse(contactId, step.triggerResponse);
+    }
+
+    // Handle cross-agent delivery (e.g., LENA sends training, CARA delivers it)
+    if (step.crossAgentDelivery) {
+      const { targetAgent, responseKey } = step.crossAgentDelivery;
+      // Add message to target agent's chat after a short delay
+      setTimeout(() => {
+        get().triggerAgentResponse(targetAgent, responseKey);
+        // Mark target agent as having unread message
+        set((state) => ({
+          contacts: state.contacts.map((c) =>
+            c.id === targetAgent ? { ...c, unread: true } : c
+          ),
+        }));
+      }, 2000); // Slight delay after LENA's confirmation
     }
 
     // Advance script index
