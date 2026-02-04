@@ -57,26 +57,26 @@ type ScriptStep = {
 };
 
 const caraScript: ScriptStep[] = [
-  // After intro, user says Yes
-  { type: "user-response", label: "Yes", userMessage: "Yes", triggerResponse: "afterYes" },
-  // Time skip to next day
-  { type: "time-skip", label: "⏭ Next day — Pre-meeting prep", triggerResponse: "preMeeting", advanceDays: 1 },
-  // User wants to see the technique
-  { type: "user-response", label: "Show me", userMessage: "Show me", triggerResponse: "accusationAudit" },
-  // User requests audio
-  { type: "user-response", label: "Send 3-min audio for commute", userMessage: "Send it to me", triggerResponse: "audioSent" },
-  // Time skip to after meeting
-  { type: "time-skip", label: "⏭ After meeting — Debrief", triggerResponse: "postMeeting", advanceDays: 1, advanceHours: 4 },
-  // User reports how it went (the "learning moment" path)
-  { type: "user-response", label: "Okay, but I caved when they threatened to walk", userMessage: "Okay. Tried the Accusation Audit but caved when they threatened to walk away.", triggerResponse: "batnaExplanation" },
-  // Time skip to 1 week later
-  { type: "time-skip", label: "⏭ 1 week later — Spaced repetition", triggerResponse: "spacedRepetition", advanceDays: 7 },
-  // User has a BATNA
-  { type: "user-response", label: "I'll ask for freelancer budget instead", userMessage: "I'll ask for freelancer budget instead.", triggerResponse: "goodPivot" },
-  // Time skip to 90 days
+  // User opts in to coaching
+  { type: "user-response", label: "Yes, let's do it!", userMessage: "Yes, let's do it! I could definitely use some help with negotiations.", triggerResponse: "afterYes" },
+  // Time skip to next morning - pre-meeting prep
+  { type: "time-skip", label: "⏭ Next morning — Day of Acme meeting", triggerResponse: "preMeeting", advanceDays: 1 },
+  // User wants to learn the technique
+  { type: "user-response", label: "Yes, show me how", userMessage: "Yes, show me how to apply this to Acme.", triggerResponse: "accusationAudit" },
+  // User requests the audio
+  { type: "user-response", label: "Send me the audio", userMessage: "This is great — send me the audio, I'll listen on the way.", triggerResponse: "audioSent" },
+  // Time skip to after the meeting
+  { type: "time-skip", label: "⏭ After the meeting — Debrief time", triggerResponse: "postMeeting", advanceHours: 4 },
+  // User shares what happened (the learning moment)
+  { type: "user-response", label: "It went okay, but I caved at the end...", userMessage: "It went okay at first. I tried the Accusation Audit and they seemed disarmed. But then they threatened to walk and I panicked — ended up giving 15% more discount than I wanted.", triggerResponse: "batnaExplanation" },
+  // Time skip to 1 week later - spaced repetition
+  { type: "time-skip", label: "⏭ 1 week later — CARA checks in", triggerResponse: "spacedRepetition", advanceDays: 7 },
+  // User shows they learned BATNA
+  { type: "user-response", label: "Freelancer budget — that's my Plan B", userMessage: "If they say no to headcount, I'll pivot to asking for freelancer budget. Same outcome, different path.", triggerResponse: "goodPivot" },
+  // Time skip to 90 days - quarterly review
   { type: "time-skip", label: "⏭ 90 days later — Quarterly review", triggerResponse: "quarterlyReview", advanceDays: 83 },
-  // User downloads PDF
-  { type: "user-response", label: "Download 1-page PDF", userMessage: "Thanks, downloading now.", triggerResponse: "endDemo" },
+  // User receives their growth snapshot
+  { type: "user-response", label: "This is amazing — thanks CARA!", userMessage: "Wow, this is amazing to see laid out like this. Thanks CARA!", triggerResponse: "endDemo" },
 ];
 
 const lenaScript: ScriptStep[] = [
@@ -126,46 +126,176 @@ const caraConversation: Record<
   { content: string; actions?: MessageAction[]; attachment?: MessageAttachment }
 > = {
   intro: {
-    content: `Hi Alex! I scanned your last 30 days — you had 5+ meetings with Procurement and Vendors.\n\nWant to make Negotiation your focus this quarter?`,
+    content: `Hey Alex! 👋
+
+I'm CARA, your personal coaching agent. I've been looking at your calendar and noticed something interesting — over the last month, you've had 7 meetings tagged as "vendor," "contract," or "procurement."
+
+That's a lot of negotiation happening. Some people love it, some dread it — but either way, it's a skill that compounds. Get 10% better at negotiating, and it pays dividends in every deal for the rest of your career.
+
+Want to make Negotiation your growth focus this quarter? I'll send you the right insight at the right moment — like a coach in your corner before big meetings.`,
   },
   afterYes: {
-    content: `Locked in. I'll watch your calendar and send tips before relevant meetings. Talk soon.`,
+    content: `Love it. Here's how this works:
+
+📅 **Before key meetings** — I'll send you a quick technique to try, based on what's on your calendar and what you're working on.
+
+💬 **After meetings** — Quick debrief. What worked? What didn't? I'll help you extract the lesson.
+
+🔁 **Between meetings** — Spaced repetition. I'll quiz you on concepts so they stick when pressure hits.
+
+I'm pulling from the best sources — Chris Voss, Harvard PON, Stuart Diamond — but distilled into things you can actually use in the next 24 hours.
+
+First up: I see you have the Acme Corp renewal tomorrow. I'll reach out in the morning with something useful. Talk soon! 🤝`,
   },
   preMeeting: {
-    content: `Acme Corp renewal tomorrow at 10 AM.\nYou mentioned wanting to hold firm on price.\n\n2-min refresh on the "Accusation Audit" from Never Split the Difference?`,
+    content: `Good morning! ☀️
+
+Acme Corp renewal is at 10 AM. Looked at your notes from last time — you mentioned they always push hard on price and last quarter you gave more ground than you wanted.
+
+I want to share a technique that's perfect for this. It's called the **Accusation Audit** — comes from Chris Voss (former FBI hostage negotiator, wrote "Never Split the Difference").
+
+The idea: Start by listing every negative thing they *might* be thinking about you. Sounds counterintuitive, right? But it works because it:
+
+1. Takes the sting out of their objections before they raise them
+2. Makes you look self-aware and reasonable
+3. Often prompts them to *reassure you* instead of attack
+
+Want me to show you how to apply this to Acme specifically?`,
   },
   accusationAudit: {
-    content: `The move: Open by listing everything they *might* think about you.\n\n"You probably think we're being unreasonable with this budget..."\n\nIt forces them to reassure you instead of attacking.`,
+    content: `Here's how to open with Acme:
+
+*"Before we dive in, I want to acknowledge something. You're probably thinking we're going to give you the same runaround on pricing. You might feel like we don't fully appreciate how tight budgets are right now. And honestly, you might be wondering if this partnership is even worth renewing at these rates..."*
+
+Then — stop. Let the silence work.
+
+What usually happens: They start *disagreeing* with your negative assumptions. "No, no, we value the partnership..." And suddenly they're advocating for the deal instead of against it.
+
+**Your one move:** Write down 3 things they might be thinking negatively about you or this deal. Then say them out loud at the start.
+
+Here's a 3-minute audio refresher you can listen to on your way in. I break down exactly how to deliver it with the right tone.`,
   },
   audioSent: {
-    content: `Here's your 3-minute refresher. Good luck tomorrow!`,
+    content: `🎧 Here's your audio refresher — 3 minutes on the Accusation Audit with examples.
+
+One more thing: Remember, the goal isn't to "win." It's to understand what they actually need and find a path that works for both sides. Go in curious, not combative.
+
+You've got this. I'll check in after to hear how it went! 💪`,
     attachment: { type: "audio", title: "Accusation Audit - Quick Refresher", duration: "3:12" },
   },
   postMeeting: {
-    content: `How did Acme go?`,
+    content: `Hey! Acme meeting wrapped up — how'd it go?
+
+I'm curious:
+• Did you try the Accusation Audit?
+• How did they respond?
+• Where did you feel strong vs. where did it get tricky?
+
+No judgment — the goal is to learn. Even the "failures" are data. 📊`,
   },
   nailedIt: {
-    content: `Nice work! The prep paid off. I'll log this win in your Negotiation Journal.`,
+    content: `YES! 🎉 That's what I'm talking about!
+
+This is exactly how skills compound. You:
+1. Learned a technique (Accusation Audit)
+2. Applied it in a real situation
+3. Saw it work
+
+That's not theoretical knowledge anymore — it's *experience*. Your brain now has a success pattern to draw from next time the pressure's on.
+
+I'm logging this in your Negotiation Journal as a win. We'll reference it when we do your quarterly review.
+
+Enjoy this one. You earned it. 🏆`,
   },
   batnaExplanation: {
-    content: `Classic. The "walk away" threat triggers panic.\n\nKey concept: BATNA (Best Alternative to Negotiated Agreement). If you don't know yours, you'll always cave.\n\nAction: Before next negotiation, write down what actually happens if they walk. Usually not that bad.\n\nSaved to your Negotiation Journal.`,
+    content: `Ah, the classic "walk away" moment. Don't beat yourself up — this is the #1 place people cave, even experienced negotiators.
+
+Here's what happened neurologically: When they threatened to walk, your brain triggered a loss-aversion response. The fear of losing the deal overwhelmed your rational assessment of whether the deal was even good.
+
+**The concept you need: BATNA**
+(Best Alternative To a Negotiated Agreement)
+
+Before any negotiation, you need to know: *What happens if this falls through?* Not in a vague "that would be bad" way, but specifically:
+
+• Is there another vendor?
+• What's the cost of delay?
+• What's the actual worst case?
+
+When you know your BATNA, the "walk away" threat loses its power. Because you can calmly think: "Okay, if they walk... I'll do X. That's not ideal, but it's survivable."
+
+**Your homework for next time:**
+Before any negotiation, write down in one sentence: "If this falls through, I will ___."
+
+I've saved this learning moment to your Negotiation Journal. This is actually great progress — you identified exactly where you need to grow. That's rare. Most people just feel vaguely bad and move on. 📝`,
   },
   spacedRepetition: {
-    content: `Quick one. You have a 1:1 with your Director today.\n\nDo you know your BATNA for the resource request?\nIf they say "no budget for hires" — what's Plan B?`,
+    content: `Quick pulse check! 🎯
+
+I see you have a 1:1 with your Director at 2pm. Looking at your notes, you're planning to ask for more headcount.
+
+Pop quiz: **What's your BATNA?**
+
+If they say "no budget for new hires" — what's your Plan B?
+
+(Not a trap — I'm helping you prepare in real-time. The answer you give me now is the prep you'll wish you'd done.)`,
   },
   goodPivot: {
-    content: `Solid pivot. Good luck.`,
+    content: `Freelancer budget — that's a *great* pivot. 💡
+
+You just demonstrated what we call "creative problem-solving under constraint." Instead of:
+❌ Accepting a flat "no"
+❌ Getting frustrated and disengaging
+❌ Asking for the same thing louder
+
+You found a third door. Same outcome (more capacity), different path (freelancers vs. FTEs).
+
+This is advanced negotiation. You're not just applying techniques — you're thinking flexibly.
+
+Go get it. Let me know how it lands. 🚀`,
   },
   quarterlyReview: {
-    content: `90-day check-in. Here's your Growth Snapshot:\n\n📊 Strategic Prep (BATNA) ········· High\n📊 Tactical Empathy (Accusation Audit) · Practicing\n📊 Emotional Regulation ·········· New Focus\n\n🏆 Key Win: Pivoted to freelancer budget in Week 3 when Director said no to new hires.`,
+    content: `Alex — it's been 90 days. Time for your Growth Snapshot. 📊
+
+**Where You Started:**
+You came in with natural instincts but no structured framework. Your pattern was: prepare mentally, but wing it tactically. When pressure hit, you'd default to accommodation.
+
+**What You've Built:**
+
+🟢 **Strategic Preparation (BATNA)** — Strong
+You now consistently identify alternatives before negotiations. This showed up in Week 3 when you pivoted to freelancer budget without missing a beat.
+
+🟡 **Tactical Empathy (Accusation Audit)** — Practicing
+You've used this 3 times. Hit rate: 2/3. The miss was the Acme call where timing was off — but you self-corrected in the debrief.
+
+🔵 **Emotional Regulation** — Emerging
+The "walk away" trigger still gets you. This is your next growth edge. We'll work on this next quarter.
+
+**Highlight Reel:**
+🏆 Held firm on Acme pricing (first time in 3 quarters)
+🏆 Pivoted to freelancer budget when headcount was denied
+🏆 Completed 4 pre-meeting preps with technique application
+
+You're not the same negotiator you were 90 days ago. The data shows it, and more importantly — you can *feel* it in the room now.`,
   },
   endDemo: {
-    content: `Here's your Growth Snapshot. Keep going — you're building real skills. See you next quarter!`,
+    content: `Here's your full Growth Snapshot PDF — good for sharing with your manager or just keeping for yourself.
+
+**Next quarter preview:** We're going to work on emotional regulation — staying grounded when the other side escalates. I've got some techniques from high-stakes hostage negotiation that translate beautifully to vendor calls. 😄
+
+Keep going, Alex. Real skills compound. Every negotiation from here on out benefits from what you built this quarter.
+
+See you next week. 🤝`,
     attachment: { type: "pdf", title: "Alex_Growth_Snapshot_Q1.pdf", size: "142 KB" },
   },
   // Training delivery from LENA via CARA
   trainingDelivery: {
-    content: `Hi Sarah! 👋\n\nYour "First-Time Manager Essentials" program starts today.\n\nModule 1 is a 10-min read on Delegation. Ready when you are!`,
+    content: `Hi Sarah! 👋
+
+Your "First-Time Manager Essentials" program starts today.
+
+Module 1 is a 10-min read on Delegation — specifically, why most new managers either delegate too little (and burn out) or delegate too much (and lose quality). There's a sweet spot, and we'll help you find it.
+
+Ready when you are!`,
     attachment: { type: "pdf", title: "Module_1_Delegation.pdf", size: "856 KB" },
   },
   trainingModuleOpened: {
