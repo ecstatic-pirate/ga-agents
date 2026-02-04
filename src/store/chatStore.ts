@@ -80,26 +80,20 @@ const caraScript: ScriptStep[] = [
 ];
 
 const lenaScript: ScriptStep[] = [
-  // Sarah asks to set up training
-  { type: "user-response", label: "Set up training for 12 new managers", userMessage: "I need to set up training for 12 new first-time managers in Q1.", triggerResponse: "setupRequest" },
-  // User confirms creation
-  { type: "user-response", label: "Create it", userMessage: "Create it", triggerResponse: "afterCreate" },
-  // User says who to send to
-  { type: "user-response", label: "Send to Q1 cohort", userMessage: "Send it to the Q1 manager cohort", triggerResponse: "scheduled" },
-  // Time skip - Day 1: LENA confirms sent, CARA delivers the content
-  {
-    type: "time-skip",
-    label: "⏭ Day 1 — Training delivered",
-    triggerResponse: "deliverySent",
-    advanceDays: 1,
-    crossAgentDelivery: { targetAgent: "cara", responseKey: "trainingDelivery" }
-  },
-  // Time skip - Back to Sarah view (2 weeks later)
-  { type: "time-skip", label: "⏭ 2 weeks later — Progress report", triggerResponse: "report", advanceDays: 13 },
-  // Sarah extends deadline for lagging learners
-  { type: "user-response", label: "Extend deadline by 1 week", userMessage: "Extend by 1 week", triggerResponse: "extended" },
+  // Sarah describes what she needs
+  { type: "user-response", label: "I need training for 12 new managers", userMessage: "I need to set up training for 12 first-time managers starting Q1. They've never managed before and I want to get them up to speed on the basics — delegation, feedback, 1:1s. What can you do?", triggerResponse: "setupRequest" },
+  // Sarah approves the learning path
+  { type: "user-response", label: "Yes, build it!", userMessage: "This looks great — yes, build it!", triggerResponse: "afterCreate" },
+  // Sarah specifies the audience
+  { type: "user-response", label: "Send to Q1 Manager Cohort", userMessage: "Send it to the Q1 Manager Cohort — that's the 12 people who got promoted last month.", triggerResponse: "scheduled" },
+  // Sarah confirms launch
+  { type: "user-response", label: "Let's launch! 🚀", userMessage: "Let's do it — launch the program!", triggerResponse: "deliverySent", crossAgentDelivery: { targetAgent: "cara", responseKey: "trainingDelivery" } },
+  // Time skip - 2 weeks later, progress report
+  { type: "time-skip", label: "⏭ 2 weeks later — Progress check", triggerResponse: "report", advanceDays: 14 },
+  // Sarah decides to extend for stragglers
+  { type: "user-response", label: "Extend their deadline by a week", userMessage: "Let's extend the deadline for Jamie and Priya — give them another week.", triggerResponse: "extended" },
   // Time skip - Program complete
-  { type: "time-skip", label: "⏭ 1 week later — Program complete", triggerResponse: "finalReport", advanceDays: 7 },
+  { type: "time-skip", label: "⏭ 1 week later — Program complete!", triggerResponse: "finalReport", advanceDays: 7 },
 ];
 
 interface ChatState {
@@ -289,17 +283,38 @@ See you next week. 🤝`,
   },
   // Training delivery from LENA via CARA
   trainingDelivery: {
-    content: `Hi Sarah! 👋
+    content: `Hey Sarah! 🎓
 
-Your "First-Time Manager Essentials" program starts today.
+You've been enrolled in **"First-Time Manager Essentials"** — a learning program designed for new managers like you.
 
-Module 1 is a 10-min read on Delegation — specifically, why most new managers either delegate too little (and burn out) or delegate too much (and lose quality). There's a sweet spot, and we'll help you find it.
+Don't worry, this isn't a 4-hour workshop. It's 45 minutes total, spread across 2 weeks, with practical stuff you can use immediately.
 
-Ready when you are!`,
+**Starting today: Module 1 — Delegation**
+
+The #1 struggle for new managers? Letting go. You got promoted because you're great at your job. Now you need to be great at helping *others* do the job. That's a different skill.
+
+This 8-minute read covers:
+• The 5 levels of delegation (not everything needs the same hand-off)
+• How to delegate without micromanaging
+• The "70% rule" — when good enough is actually better
+
+Attached is your first module. Tomorrow, I'll send you a quick activity to practice.
+
+Let's go! 💪`,
     attachment: { type: "pdf", title: "Module_1_Delegation.pdf", size: "856 KB" },
   },
   trainingModuleOpened: {
-    content: `Great! Let me know if you have questions. Tomorrow you'll get a quick activity to practice what you learned.`,
+    content: `Nice! You knocked out Module 1. 🙌
+
+Quick recap of what you learned:
+• Delegation isn't about dumping work — it's about developing people
+• The 5 levels help you match the hand-off to the task
+• Start with "70% as good as you" — perfection isn't the goal
+
+**Tomorrow's Challenge:**
+I'm going to ask you to delegate ONE task you'd normally do yourself. Small stakes, real practice.
+
+See you then!`,
   },
 };
 
@@ -309,33 +324,188 @@ const lenaConversation: Record<
   { content: string; actions?: MessageAction[]; attachment?: MessageAttachment }
 > = {
   intro: {
-    content: `Hi Sarah! I'm LENA, your Learning Enablement Agent. How can I help you today?`,
+    content: `Hey Sarah! 👋
+
+I'm LENA, your Learning Enablement Agent. I help L&D teams design, deliver, and track learning programs — without the busywork.
+
+Think of me as your learning design partner who happens to work 24/7 and never forgets to send reminders. 😄
+
+What are you working on? I can help with:
+• Building learning paths from getAbstract content
+• Scheduling and delivering to your teams
+• Tracking completion and surfacing insights
+• Nudging learners who fall behind
+
+What do you need?`,
   },
   setupRequest: {
-    content: `On it. Here's what I'll create in Studio:\n\n**Learning Path: "First-Time Manager Essentials"**\n├─ Module 1: Delegation (Summary + Skill Boost)\n├─ Module 2: Feedback (Summary + AI Coaching)\n└─ Module 3: Running 1:1s (Custom Page + Activity)\n\n+ Activity Calendar: 2 weeks, daily micro-tasks\n+ AI Coaching: Practice difficult conversations`,
+    content: `First-time managers — great focus. This is one of the highest-leverage training investments you can make. Research shows 60% of new managers fail in their first 2 years, usually because they never learned the basics.
+
+Here's what I'd recommend building:
+
+**📚 Learning Path: "First-Time Manager Essentials"**
+
+**Module 1: Delegation** (Week 1)
+The #1 mistake new managers make — doing everything themselves. We'll cover the what/when/how of letting go.
+→ 8-min getAbstract summary + Skill Boost quiz
+
+**Module 2: Giving Feedback** (Week 1)
+Most new managers either avoid feedback or deliver it poorly. We'll teach the SBI model (Situation-Behavior-Impact).
+→ 10-min summary + AI Coaching session to practice
+
+**Module 3: Running Effective 1:1s** (Week 2)
+The habit that separates good managers from great ones. We'll give them a framework they can use starting this week.
+→ 8-min summary + reflection activity
+
+**The Learning Science Behind This:**
+• Spaced over 2 weeks (not crammed in one day) for better retention
+• Each module has an *action* attached — learning by doing
+• AI Coaching lets them practice tough conversations safely
+
+Total time commitment: ~45 minutes spread across 2 weeks.
+
+Want me to build this?`,
   },
   afterCreate: {
-    content: `Done! ✅ 3 modules, ~45 min total.\n\nWho should I send this to?`,
-    attachment: { type: "pdf" as const, title: "First-Time_Manager_Essentials.pdf", size: "2.4 MB" },
+    content: `Done! ✅ Built in 30 seconds. (You're welcome. 😄)
+
+Here's your learning path — I've attached a preview PDF so you can see exactly what learners will experience.
+
+**Quick Stats:**
+• 3 modules, 26 minutes of core content
+• 3 practice activities
+• 1 AI Coaching session
+• Estimated completion time: 45 min over 2 weeks
+
+**What's Included:**
+✓ Automatic welcome message
+✓ Spaced delivery schedule
+✓ Reminder nudges for inactive learners
+✓ Completion tracking + insights
+
+Now — who should I send this to? You can give me:
+• A team name ("Q1 Manager Cohort")
+• Specific names
+• Or an email list`,
+    attachment: { type: "pdf", title: "First-Time_Manager_Essentials_Preview.pdf", size: "2.4 MB" },
   },
   scheduled: {
-    content: `Scheduled for 12 learners. Each one gets:\n\n📅 Day 1 → Welcome + Module 1\n📅 Day 2 → Activity: "Delegate one task today"\n📅 Day 4 → Module 2 + reminder\n📅 Day 5 → AI Coaching invite\n📅 Day 8-10 → Module 3 + wrap-up\n\nI'll handle all reminders automatically.`,
+    content: `Perfect. Here's the delivery plan for your 12 learners:
+
+**📅 The Journey:**
+
+**Day 1** — Welcome + Module 1 (Delegation)
+*"Hey! Your manager essentials program starts today..."*
+
+**Day 2** — Micro-activity
+*"Today's challenge: Delegate one task you'd normally do yourself."*
+
+**Day 4** — Module 2 (Feedback) + check-in
+*For anyone who hasn't started yet, gentle nudge*
+
+**Day 5** — AI Coaching invitation
+*"Ready to practice a tough feedback conversation? I'll play your direct report."*
+
+**Day 8** — Module 3 (1:1s)
+*Final content drop*
+
+**Day 10** — Wrap-up + celebration
+*Completion certificate, satisfaction survey*
+
+**What I'll Handle Automatically:**
+• Welcome messages
+• Reminder nudges (friendly, not annoying)
+• Progress tracking
+• Flagging anyone who falls behind
+
+You'll get a progress report from me at the halfway point and when everyone completes.
+
+Ready to launch? 🚀`,
   },
   deliverySent: {
-    content: `Content sent to all 12 learners! ✅\n\nYou're also enrolled, so you'll receive your copy via CARA.\n\nI'll send you progress updates as they complete modules.`,
+    content: `Launched! 🚀 Content is now live for all 12 learners.
+
+**What just happened:**
+• Welcome message sent to everyone
+• Module 1 unlocked and ready
+• Day 2 activity scheduled
+• All reminder sequences armed
+
+**Pro tip:** You're enrolled too, so you'll experience the program exactly as your learners do. Your content will arrive via CARA (your coaching agent) — check that chat!
+
+I'll send you a progress update at the end of Week 1. Until then, I've got this. Go focus on other things. 💪`,
   },
   moduleOpened: {
     content: `Great! Let me know if you have questions. Tomorrow you'll get a quick activity to practice what you learned.`,
   },
   report: {
-    content: `Program update — 2 weeks in:\n\n📊 **Completion:** 10/12 finished all modules (83%)\n📊 **AI Coaching:** 8/12 did at least 1 practice session\n📊 **Top Activity:** "Delegate one task" — 11/12 done\n\n⚠️ **Lagging:** Jamie, Priya (stuck on Module 2)`,
+    content: `Hey Sarah — Week 2 progress report! 📊
+
+**The Good News:**
+• **10 of 12** learners finished all modules (83%)
+• **8 of 12** completed at least one AI Coaching session
+• **Top engagement:** "Delegate one task" activity — 11/12 did it!
+• **Avg. satisfaction so far:** 4.4/5 ⭐
+
+**Needs Attention:**
+⚠️ **Jamie Chen** — Opened Module 1 but hasn't progressed since Day 2
+⚠️ **Priya Sharma** — Started Module 2, got stuck, hasn't returned
+
+**My Recommendation:**
+These two aren't disengaged — they're probably just busy. I can:
+
+1. **Extend their deadline** by 1 week (gives them breathing room)
+2. **Send a personal nudge** from you (I'll draft it, you just approve)
+3. **Do nothing** and let the automated reminders continue
+
+What would you like me to do?`,
   },
   extended: {
-    content: `Done. Jamie and Priya now have until Friday.\nI'll nudge them Monday + Wednesday.`,
+    content: `Done! ✅ Jamie and Priya now have until Friday.
+
+**What I'm doing:**
+• Sending a friendly "hey, you've got more time" message now
+• Scheduling a nudge for Monday (halfway reminder)
+• Scheduling final nudge for Wednesday (2 days left)
+
+**The tone:** Supportive, not guilt-trippy. Something like:
+*"Hey! Just a heads up — we've extended your deadline to Friday. Module 2 is only 10 minutes, and the feedback framework is genuinely useful. Worth finishing when you have a coffee break."*
+
+I'll let you know when they complete. 🤞`,
   },
   finalReport: {
-    content: `Program complete! 🎉\n\n**Final Results:**\n✅ 12/12 completed all modules (100%)\n✅ 10/12 completed AI Coaching\n✅ Average satisfaction: 4.6/5\n\nHere's the full report for your records.`,
-    attachment: { type: "pdf" as const, title: "Q1_Manager_Training_Report.pdf", size: "1.2 MB" },
+    content: `Sarah — your program is complete! 🎉
+
+**Final Scorecard:**
+
+| Metric | Result |
+|--------|--------|
+| Completion Rate | **100%** (12/12) |
+| AI Coaching Sessions | **83%** (10/12) |
+| Activities Completed | **94%** avg |
+| Satisfaction Score | **4.6/5** ⭐ |
+| Avg. Time to Complete | **12 days** |
+
+**Highlights:**
+🏆 Jamie and Priya finished after the extension — the nudges worked
+🏆 3 learners voluntarily did extra AI Coaching sessions
+🏆 Most-bookmarked content: "The 5 Levels of Delegation" framework
+
+**What Learners Said:**
+*"I actually used the SBI model in a real feedback conversation this week. It worked."*
+— Marcus T.
+
+*"The AI coaching was awkward at first but actually really helpful for practicing."*
+— Jamie C.
+
+**ROI Framing (for your stakeholders):**
+12 new managers × 45 min training = 9 hours total investment
+vs. typical in-person workshop: 12 people × 4 hours = 48 hours + facilitator cost
+
+**Here's your full report PDF** — ready to share with leadership or keep for your records.
+
+Want to run this again for the next cohort? I saved it as a template. 📋`,
+    attachment: { type: "pdf", title: "Q1_Manager_Training_Report.pdf", size: "1.2 MB" },
   },
 };
 
