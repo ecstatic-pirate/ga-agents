@@ -79,6 +79,16 @@ const caraScript: ScriptStep[] = [
   { type: "user-response", label: "This is amazing — thanks CARA!", userMessage: "Wow, this is amazing to see laid out like this. Thanks CARA!", triggerResponse: "endDemo" },
 ];
 
+// CARA training script - triggered when learner receives training via LENA
+const caraTrainingScript: ScriptStep[] = [
+  // Learner asks a clarifying question
+  { type: "user-response", label: "What's the 70% rule again?", userMessage: "Quick question — what's the 70% rule you mentioned? I want to make sure I understand it correctly.", triggerResponse: "learnerQuestion" },
+  // CARA offers to schedule coaching
+  { type: "user-response", label: "That helps! Can we schedule the coaching?", userMessage: "That makes sense! Yes, I'd like to schedule the AI coaching session.", triggerResponse: "coachingSchedule" },
+  // Learner picks a time
+  { type: "user-response", label: "Tomorrow at 2pm works", userMessage: "Tomorrow at 2pm works great — right after my standup.", triggerResponse: "coachingScheduled" },
+];
+
 const lenaScript: ScriptStep[] = [
   // Sarah describes what she needs
   { type: "user-response", label: "I need training for 12 new managers", userMessage: "I need to set up training for 12 first-time managers starting Q1. They've never managed before and I want to get them up to speed on the basics — delegation, feedback, 1:1s. What can you do?", triggerResponse: "setupRequest" },
@@ -101,6 +111,8 @@ interface ChatState {
   conversations: Record<string, Conversation>;
   activeContactId: string | null;
   scriptIndex: Record<string, number>;
+  caraTrainingMode: boolean; // When true, CARA shows training script instead of negotiation script
+  caraTrainingIndex: number; // Current step in training script
   demoStartTime: Date; // When the demo started (reference point)
   demoTime: Date; // Current fictional time for the demo
   setActiveContact: (id: string) => void;
@@ -896,6 +908,8 @@ export const useChatStore = create<ChatState>((set, get) => ({
   conversations: initialConversations,
   activeContactId: "cara",
   scriptIndex: { cara: 0, lena: 0 },
+  caraTrainingMode: false,
+  caraTrainingIndex: 0,
   demoStartTime: new Date(), // Reference point for relative dates
   demoTime: new Date(), // Current fictional time
 
@@ -918,6 +932,11 @@ export const useChatStore = create<ChatState>((set, get) => ({
   },
 
   getNextScriptStep: (agentType: "cara" | "lena") => {
+    // If CARA is in training mode, use training script
+    if (agentType === "cara" && get().caraTrainingMode) {
+      const index = get().caraTrainingIndex;
+      return index < caraTrainingScript.length ? caraTrainingScript[index] : null;
+    }
     const script = agentType === "cara" ? caraScript : lenaScript;
     const index = get().scriptIndex[agentType] || 0;
     return index < script.length ? script[index] : null;
@@ -927,8 +946,19 @@ export const useChatStore = create<ChatState>((set, get) => ({
     const contact = get().contacts.find((c) => c.id === contactId);
     if (!contact?.isAgent || !contact.agentType) return;
 
-    const script = contact.agentType === "cara" ? caraScript : lenaScript;
-    const currentIndex = get().scriptIndex[contact.agentType] || 0;
+    // Check if CARA is in training mode
+    const isCaraTraining = contact.agentType === "cara" && get().caraTrainingMode;
+
+    let script: ScriptStep[];
+    let currentIndex: number;
+
+    if (isCaraTraining) {
+      script = caraTrainingScript;
+      currentIndex = get().caraTrainingIndex;
+    } else {
+      script = contact.agentType === "cara" ? caraScript : lenaScript;
+      currentIndex = get().scriptIndex[contact.agentType] || 0;
+    }
 
     if (currentIndex >= script.length) return;
 
@@ -968,22 +998,33 @@ export const useChatStore = create<ChatState>((set, get) => ({
       // Add message to target agent's chat after a short delay
       setTimeout(() => {
         get().triggerAgentResponse(targetAgent, responseKey);
-        // Mark target agent as having unread message
+        // Mark target agent as having unread message and enable training mode
         set((state) => ({
           contacts: state.contacts.map((c) =>
             c.id === targetAgent ? { ...c, unread: true } : c
           ),
+          // Enable CARA training mode so learner can interact
+          caraTrainingMode: targetAgent === "cara" ? true : state.caraTrainingMode,
+          caraTrainingIndex: 0,
+          // Switch to CARA to show the training delivery
+          activeContactId: targetAgent,
         }));
       }, 2000); // Slight delay after LENA's confirmation
     }
 
     // Advance script index
-    set((state) => ({
-      scriptIndex: {
-        ...state.scriptIndex,
-        [contact.agentType!]: currentIndex + 1,
-      },
-    }));
+    if (isCaraTraining) {
+      set((state) => ({
+        caraTrainingIndex: state.caraTrainingIndex + 1,
+      }));
+    } else {
+      set((state) => ({
+        scriptIndex: {
+          ...state.scriptIndex,
+          [contact.agentType!]: currentIndex + 1,
+        },
+      }));
+    }
   },
 
   addMessage: (contactId: string, message: Message) => {
