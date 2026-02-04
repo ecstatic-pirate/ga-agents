@@ -98,7 +98,7 @@ export default function ChatList() {
             <div key={contact.id} className="px-2 relative">
               {/* Unread indicator dot */}
               {contact.unread && (
-                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-[#5b5fc7] rounded-full" />
+                <div className="absolute left-[18px] top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-[#5b5fc7] rounded-full z-10" />
               )}
               <div
                 className={`chat-item ${activeContactId === contact.id ? "active" : ""}`}
@@ -138,7 +138,7 @@ export default function ChatList() {
             <div key={contact.id} className="px-2 relative">
               {/* Unread indicator dot */}
               {contact.unread && (
-                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-[#5b5fc7] rounded-full" />
+                <div className="absolute left-[18px] top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-[#5b5fc7] rounded-full z-10" />
               )}
               <div
                 className={`chat-item ${activeContactId === contact.id ? "active" : ""}`}
